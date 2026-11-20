@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+python-multipart
+faster-whisper
+gTTS
+noisereduce
+soundfile
+numpy
+rapidfuzz
