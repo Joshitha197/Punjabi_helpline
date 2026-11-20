@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pa">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ਕਿਸਾਨ ਹੈਲਪਲਾਈਨ | Punjabi Farmer Voice Helpline</title>
+  <style>
+    * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #f0f7f2;
+      color: #163020;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      width: 100%;
+      max-width: 680px;
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 8px 24px rgba(22, 48, 32, 0.08);
+    }
+    h1 { margin: 0 0 6px; font-size: 1.5rem; color: #1b5e20; }
+    .subtitle { margin: 0 0 20px; color: #4f6f52; font-size: 0.95rem; }
+
+    .mic-row { display: flex; gap: 12px; margin-bottom: 14px; }
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 14px 18px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    #recBtn { flex: 1; background: #2e7d32; color: white; }
+    #recBtn:disabled { background: #a5d6a7; cursor: not-allowed; }
+    #stopBtn { flex: 1; background: #c62828; color: white; }
+    #stopBtn:disabled { background: #ef9a9a; cursor: not-allowed; }
+
+    .status {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #2e7d32;
+      margin-bottom: 16px;
+      min-height: 20px;
+    }
+
+    .samples-label { font-size: 0.85rem; font-weight: 600; color: #4f6f52; margin-bottom: 8px; }
+    .samples { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+    .sample-btn {
+      background: #e8f5e9;
+      color: #1b5e20;
+      padding: 8px 12px;
+      font-size: 0.85rem;
+      border: 1px solid #c8e6c9;
+    }
+    .sample-btn:hover { background: #c8e6c9; }
+
+    .text-row { display: flex; gap: 10px; margin-bottom: 20px; }
+    input[type="text"] {
+      flex: 1;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1.5px solid #c8e6c9;
+      font-size: 1rem;
+    }
+    #askBtn { background: #1565c0; color: white; }
+
+    .result-card {
+      background: #f8fbf9;
+      border: 1.5px solid #d8eadf;
+      border-radius: 14px;
+      padding: 18px;
+      display: none;
+    }
+    .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+    .badge {
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      background: #e3f2fd;
+      color: #0d47a1;
+    }
+    .badge.ok { background: #e8f5e9; color: #1b5e20; }
+    .badge.slow { background: #ffebee; color: #b71c1c; }
+
+    .label { font-size: 0.8rem; text-transform: uppercase; color: #5f7a61; margin-top: 10px; }
+    .value { font-size: 1.05rem; margin: 4px 0 10px; line-height: 1.5; }
+    .punjabi-reply { font-size: 1.2rem; font-weight: 600; color: #1b5e20; }
+    audio { width: 100%; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🌾 ਕਿਸਾਨ ਵੌਇਸ ਹੈਲਪਲਾਈਨ (Punjabi Helpline)</h1>
+    <p class="subtitle">ਮੰਡੀ ਭਾਅ, ਮੌਸਮ ਅਤੇ ਕਿਸਾਨ ਯੋਜਨਾਵਾਂ ਦੀ ਪੱਕੀ ਜਾਣਕਾਰੀ</p>
+
+    <div class="mic-row">
+      <button id="recBtn">🎤 ਬੋਲੋ (Record)</button>
+      <button id="stopBtn" disabled>⏹️ ਰੋਕੋ ਤੇ ਭੇਜੋ (Send)</button>
+    </div>
+    <div class="status" id="statusText">ਤਿਆਰ ਹੈ (Ready)</div>
+
+    <div class="samples-label">Quick Demo Tests (Click to test):</div>
+    <div class="samples">
+      <button class="sample-btn" onclick="sendText('Amritsar kanak da rate')">🌾 Amritsar kanak rate</button>
+      <button class="sample-btn" onclick="sendText('Ludhiana mausam')">⛅ Ludhiana weather</button>
+      <button class="sample-btn" onclick="sendText('PM Kisan yojana')">📋 PM Kisan scheme</button>
+      <button class="sample-btn" onclick="sendText('Bathinda dragonfruit rate')">🛡️ Hallucination trap</button>
+    </div>
+
+    <div class="text-row">
+      <input type="text" id="queryInput" placeholder="ਸਵਾਲ ਲਿਖੋ (ਜਿਵੇਂ: Amritsar kanak da rate)..." />
+      <button id="askBtn" onclick="handleTextSubmit()">Ask</button>
+    </div>
+
+    <div class="result-card" id="resultCard">
+      <div class="badges">
+        <span class="badge" id="sourceBadge">Source: -</span>
+        <span class="badge ok" id="latencyBadge">Latency: -</span>
+      </div>
+
+      <div class="label">Recognized Query</div>
+      <div class="value" id="transcriptText">-</div>
+
+      <div class="label">Helpline Reply (ਪੰਜਾਬੀ)</div>
+      <div class="value punjabi-reply" id="replyText">-</div>
+
+      <audio id="audioPlayer" controls></audio>
+    </div>
+  </div>
+
+  <script>
+    let mediaRecorder;
+    let audioChunks = [];
+
+    const recBtn = document.getElementById("recBtn");
+    const stopBtn = document.getElementById("stopBtn");
+    const statusText = document.getElementById("statusText");
+
+    recBtn.onclick = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        audioChunks = [];
+        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder.ondataavailable = (e) => {
+          if (e.data.size > 0) audioChunks.push(e.data);
+        };
+        mediaRecorder.onstop = async () => {
+          stream.getTracks().forEach((t) => t.stop());
+          const blob = new Blob(audioChunks, { type: "audio/webm" });
+          const formData = new FormData();
+          formData.append("audio", blob, "voice.webm");
+          await callHelpline(formData);
+        };
+        mediaRecorder.start();
+        recBtn.disabled = true;
+        stopBtn.disabled = false;
+        statusText.textContent = "🔴 ਸੁਣ ਰਿਹਾ ਹਾਂ... ਸਵਾਲ ਬੋਲੋ (Recording...)";
+      } catch (err) {
+        statusText.textContent = "⚠️ Mic access error: " + err.message;
+      }
+    };
+
+    stopBtn.onclick = () => {
+      if (mediaRecorder && mediaRecorder.state !== "inactive") {
+        mediaRecorder.stop();
+        recBtn.disabled = false;
+        stopBtn.disabled = true;
+        statusText.textContent = "⏳ ਜਵਾਬ ਤਿਆਰ ਹੋ ਰਿਹਾ ਹੈ (Processing...)";
+      }
+    };
+
+    function handleTextSubmit() {
+      const val = document.getElementById("queryInput").value.trim();
+      if (val) sendText(val);
+    }
+
+    async function sendText(text) {
+      document.getElementById("queryInput").value = text;
+      statusText.textContent = "⏳ ਜਵਾਬ ਤਿਆਰ ਹੋ ਰਿਹਾ ਹੈ (Processing...)";
+      const formData = new FormData();
+      formData.append("text_query", text);
+      await callHelpline(formData);
+    }
+
+    async function callHelpline(formData) {
+      try {
+        const res = await fetch("/api/helpline", { method: "POST", body: formData });
+        const data = await res.json();
+
+        document.getElementById("resultCard").style.display = "block";
+        document.getElementById("transcriptText").textContent = data.transcript || "(No speech detected)";
+        document.getElementById("replyText").textContent = data.reply_punjabi || "-";
+
+        const matchedType = data.grounding?.matched_type || "unknown";
+        document.getElementById("sourceBadge").textContent = "Source: " + matchedType.toUpperCase();
+
+        const latBadge = document.getElementById("latencyBadge");
+        latBadge.textContent = `⏱️ ${data.total_latency_sec}s (${data.within_6s_target ? "< 6s OK" : "> 6s Slow"})`;
+        latBadge.className = "badge " + (data.within_6s_target ? "ok" : "slow");
+
+        if (data.audio_base64) {
+          const player = document.getElementById("audioPlayer");
+          player.src = "data:audio/mp3;base64," + data.audio_base64;
+          player.play().catch(() => {});
+        }
+        statusText.textContent = "✅ ਪੂਰਾ ਹੋਇਆ (Done)";
+      } catch (err) {
+        statusText.textContent = "❌ Server error: " + err.message;
+      }
+    }
+  </script>
+</body>
+</html>
